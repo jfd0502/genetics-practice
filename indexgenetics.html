@@ -1,0 +1,282 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Genetics Practice</title>
+    <style>
+       /* --- Google Font Import --- */
+@import url('https://fonts.googleapis.com/css2?family=Nunito:wght@400;700;900&display=swap');
+
+/* --- General Layout & Bio-Lab Theme --- */
+body {
+    font-family: 'Nunito', sans-serif;
+    text-align: center;
+    /* Deep cellular blue/purple gradient */
+    background: linear-gradient(135deg, #0d1b2a 0%, #1b263b 50%, #415a77 100%);
+    color: #e0e1dd; /* Soft off-white text */
+    margin: 0;
+    padding: 0;
+    min-height: 100vh;
+}
+
+h1, h2 {
+    color: #00ffcc; /* Glowing Cyan */
+    text-shadow: 0px 0px 10px rgba(0, 255, 204, 0.4);
+    letter-spacing: 1px;
+}
+
+.screen {
+    display: none; 
+    padding: 40px;
+    max-width: 800px;
+    margin: 40px auto;
+    /* Frosted Glass Effect */
+    background: rgba(255, 255, 255, 0.05);
+    backdrop-filter: blur(10px);
+    -webkit-backdrop-filter: blur(10px);
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    border-radius: 20px;
+    box-shadow: 0 8px 32px 0 rgba(0, 0, 0, 0.3);
+}
+
+.screen.active {
+    display: block; 
+    animation: fadeIn 0.4s ease-in-out;
+}
+
+@keyframes fadeIn {
+    from { opacity: 0; transform: translateY(10px); }
+    to { opacity: 1; transform: translateY(0); }
+}
+
+/* --- Splash & General Buttons --- */
+button {
+    padding: 12px 25px;
+    font-size: 1.1rem;
+    font-weight: bold;
+    font-family: 'Nunito', sans-serif;
+    cursor: pointer;
+    margin-top: 20px;
+    background-color: #00ffcc;
+    color: #0d1b2a;
+    border: none;
+    border-radius: 8px;
+    box-shadow: 0 4px 15px rgba(0, 255, 204, 0.3);
+    transition: all 0.2s ease;
+}
+
+button:hover {
+    background-color: #00e6b8;
+    transform: translateY(-2px);
+    box-shadow: 0 6px 20px rgba(0, 255, 204, 0.5);
+}
+
+/* --- Menu Buttons --- */
+.menu-container {
+    display: flex;
+    justify-content: center;
+    gap: 30px;
+    margin-top: 30px;
+}
+
+.menu-btn {
+    padding: 50px 40px;
+    font-size: 1.5rem;
+    background-color: rgba(255, 255, 255, 0.1);
+    color: #fff;
+    border: 2px solid #00ffcc;
+    border-radius: 15px;
+    box-shadow: inset 0 0 0 0 transparent;
+    transition: all 0.3s ease;
+    /* Setup for your GIFs */
+    background-size: cover;
+    background-position: center;
+    background-blend-mode: overlay;
+}
+
+.punnett-btn:hover, .pedigree-btn:hover {
+    background-color: rgba(0, 255, 204, 0.8);
+    color: #0d1b2a;
+    transform: scale(1.05);
+}
+
+/* Add your GIFs back in on hover */
+.punnett-btn:hover { background-image: url('punnett-animation.gif'); }
+.pedigree-btn:hover { background-image: url('pedigree-animation.gif'); }
+
+/* --- Punnett Square Grid --- */
+.punnett-grid {
+    display: grid;
+    grid-template-columns: 120px 120px;
+    grid-template-rows: 120px 120px;
+    gap: 8px;
+    justify-content: center;
+    margin: 30px auto;
+}
+
+.grid-cell {
+    background-color: #f8f9fa; /* Keeps cells white for readability */
+    color: #0d1b2a;
+    border: 4px solid #778da9;
+    border-radius: 10px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 3rem;
+    font-weight: 900;
+    box-shadow: inset 0 0 10px rgba(0,0,0,0.1);
+}
+
+/* --- Draggable Items (Mendel's Peas Theme) --- */
+.allele-bank {
+    display: flex;
+    justify-content: center;
+    gap: 20px;
+    margin: 30px 0;
+    min-height: 70px;
+    background: rgba(0, 0, 0, 0.2);
+    padding: 20px;
+    border-radius: 12px;
+}
+
+.draggable-allele {
+    padding: 15px 25px;
+    background-color: #a7c957; /* Pea green! */
+    color: #0d1b2a;
+    border: 2px solid #386641;
+    cursor: grab;
+    font-size: 2rem;
+    font-weight: bold;
+    border-radius: 8px;
+    user-select: none;
+    box-shadow: 0 4px 0 #386641; /* 3D pop effect */
+    transition: transform 0.1s;
+}
+
+.draggable-allele:active {
+    cursor: grabbing;
+    transform: translateY(4px);
+    box-shadow: 0 0 0 #386641;
+}
+    </style>
+</head>
+<body>
+
+    <div id="splash-page" class="screen active">
+        <h1>Welcome to Genetics Practice</h1>
+        <p>Master Punnett Squares and Pedigrees to uncover the secrets of inheritance!</p>
+        <button onclick="showScreen('menu-page')">Start Practicing</button>
+    </div>
+
+    <div id="menu-page" class="screen">
+        <h2>Select Your Practice Type</h2>
+        <div class="menu-container">
+            <button class="menu-btn punnett-btn" onclick="showScreen('punnett-page')">Punnett Squares</button>
+            <button class="menu-btn pedigree-btn" onclick="showScreen('pedigree-page')">Pedigrees</button>
+        </div>
+    </div>
+
+    <div id="punnett-page" class="screen">
+        <h2 id="punnett-prompt">Question goes here...</h2>
+        
+        <div class="allele-bank" id="allele-bank" ondrop="drop(event)" ondragover="allowDrop(event)">
+            <div class="draggable-allele" draggable="true" ondragstart="drag(event)" id="allele1">T</div>
+            <div class="draggable-allele" draggable="true" ondragstart="drag(event)" id="allele2">t</div>
+            <div class="draggable-allele" draggable="true" ondragstart="drag(event)" id="allele3">T</div>
+            <div class="draggable-allele" draggable="true" ondragstart="drag(event)" id="allele4">t</div>
+        </div>
+
+        <div class="punnett-grid">
+            <div class="grid-cell" ondrop="drop(event)" ondragover="allowDrop(event)"></div>
+            <div class="grid-cell" ondrop="drop(event)" ondragover="allowDrop(event)"></div>
+            <div class="grid-cell" ondrop="drop(event)" ondragover="allowDrop(event)"></div>
+            <div class="grid-cell" ondrop="drop(event)" ondragover="allowDrop(event)"></div>
+        </div>
+
+        <button onclick="checkPunnettAnswer()">Check Answer</button>
+        <button onclick="showScreen('menu-page')">Back to Menu</button>
+    </div>
+
+    <div id="pedigree-page" class="screen">
+        <h2 id="pedigree-prompt">Pedigree question goes here...</h2>
+        <div id="pedigree-canvas">
+            <p><em>(Shapes will be generated here by JavaScript later)</em></p>
+        </div>
+        <button onclick="showScreen('menu-page')">Back to Menu</button>
+    </div>
+
+    <script>
+        // --- 1. Question Bank ---
+        const questionBank = {
+            punnett: [
+                {
+                    id: 1,
+                    prompt: "In pea plants, tall (T) is dominant to short (t). Cross a heterozygous tall plant with a short plant. Drag the correct alleles into the boxes below.",
+                    allelesBank: ["T", "t", "T", "t"], 
+                    correctAnswer: ["Tt", "tt", "Tt", "tt"] 
+                }
+            ],
+            pedigree: [
+                {
+                    id: 1,
+                    prompt: "Determine if this trait is dominant or recessive based on the pedigree.",
+                    layout: [{type: "square", shaded: false}, {type: "circle", shaded: true}], 
+                    correctAnswer: "recessive"
+                }
+            ]
+        };
+
+        // --- 2. Screen Navigation Logic ---
+        function showScreen(screenId) {
+            // Hide all screens
+            const screens = document.querySelectorAll('.screen');
+            screens.forEach(screen => {
+                screen.classList.remove('active');
+            });
+
+            // Show the requested screen
+            document.getElementById(screenId).classList.add('active');
+            
+            // If they click Punnett, load the first question
+            if(screenId === 'punnett-page') {
+                loadPunnettQuestion(0);
+            }
+        }
+
+        // --- 3. Loading Questions ---
+        function loadPunnettQuestion(index) {
+            const question = questionBank.punnett[index];
+            document.getElementById('punnett-prompt').innerText = question.prompt;
+        }
+
+        // --- 4. Drag and Drop Mechanics ---
+        function allowDrop(event) {
+            event.preventDefault(); // Necessary to allow dropping
+        }
+
+        function drag(event) {
+            event.dataTransfer.setData("text", event.target.id);
+        }
+
+        function drop(event) {
+            event.preventDefault();
+            const data = event.dataTransfer.getData("text");
+            const draggedElement = document.getElementById(data);
+            
+            // Allows dropping into the grid cell OR back into the allele bank
+            // Ensures a grid cell can only hold ONE letter at a time
+            if (event.target.classList.contains('grid-cell') && !event.target.hasChildNodes()) {
+                event.target.appendChild(draggedElement);
+            } else if (event.target.id === 'allele-bank') {
+                event.target.appendChild(draggedElement);
+            }
+        }
+
+        // --- 5. Checking Answers ---
+        function checkPunnettAnswer() {
+            alert("Checking answer logic will go here! You have successfully laid out the interactive foundation.");
+        }
+    </script>
+</body>
+</html>
